@@ -1,0 +1,39 @@
+[gd_scene load_steps=8 format=3 uid="uid://bpe7y88bvrxgu"]
+
+[ext_resource type="Script" path="res://TreeBuilder.gd" id="1_hc3wd"]
+[ext_resource type="Gradient" uid="uid://bgdawcv5yxdqf" path="res://gradient1.tres" id="2_qw3h3"]
+[ext_resource type="Curve" uid="uid://cil6wcfndim6r" path="res://width_curve1.tres" id="3_413tv"]
+[ext_resource type="Shader" path="res://vertexTest.gdshader" id="3_o620u"]
+
+[sub_resource type="Curve" id="Curve_x2ksj"]
+min_value = 5.0
+max_value = 100.0
+_data = [Vector2(0.005291, 60.3036), 0.0, -330.377, 0, 0, Vector2(0.624339, 42.2613), 0.0, 0.0, 0, 0, Vector2(1, 11.7857), -272.734, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_j3fvr"]
+curve = ExtResource("3_413tv")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hgrk5"]
+shader = ExtResource("3_o620u")
+shader_parameter/width_curve = SubResource("CurveTexture_j3fvr")
+
+[node name="Tree" type="MeshInstance2D"]
+script = ExtResource("1_hc3wd")
+iterations = 4
+angle = 0.121407
+angle_decay = -1.0
+angle_random = 0.246
+color_gradient = ExtResource("2_qw3h3")
+width_curve = ExtResource("3_413tv")
+length_curve = SubResource("Curve_x2ksj")
+random_seed = 282
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, -230)
+
+[node name="Line2D" type="Line2D" parent="."]
+visible = false
+material = SubResource("ShaderMaterial_hgrk5")
+points = PackedVector2Array(0, 0, 0, -10)
+width = 1.0
