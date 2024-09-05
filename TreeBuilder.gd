@@ -1,4 +1,4 @@
-extends Node2D
+extends MeshInstance2D
 
 #todo
 #switch to mesh-based tree
@@ -8,24 +8,19 @@ extends Node2D
 @export var iterations:int = 2:
 	set(v):
 		iterations = v
-		update_iterations()
 @export var branches:int = 2:
 	set(v):
 		branches = v
-		update_branches()
 @export_category("Position")
 @export_range(-PI,PI) var angle:float = 0.2:
 	set(v):
 		angle = v
-		update_angle()
 @export_range(-1,1) var angle_decay:float = 0.1:
 	set(v):
 		angle_decay = v
-		update_angle()
 @export_range(0,1) var angle_random:float = 0.:
 	set(v):
 		angle_random = v
-		update_angle()
 @export_category("Appearance")
 @export var color_gradient:Gradient:
 	set(v):
@@ -39,33 +34,86 @@ extends Node2D
 @export var length_curve:Curve:
 	set(v):
 		length_curve = v
-		update_length()
 
-
-var tree_mesh:ArrayMesh
 
 var rng = RandomNumberGenerator.new()
 @export var random_seed = 420:
 	set(v):
 		random_seed = v
 		rng.seed = random_seed
-		update_random()
 
 var branches_made = 0
 
-var root_branch:Line2D
+var tree_mesh:ArrayMesh = ArrayMesh.new()
+var vertices:PackedVector2Array
+var indices:PackedInt32Array
+var colors:PackedColorArray
+var v_id_array:PackedInt32Array
+
 var node_ready = false
 
-var branch_scene = preload("res://branch.tscn")
+func root_branch():
+	var v:PackedVector2Array
+	var color:Color = color_gradient.sample(0)
+	var length:float = length_curve.sample(0)
+	var bottom_width:float = width_curve.sample(0) / 2.
+	var top_width:float = width_curve.sample(1) / 2.
+	v.append_array([Vector2(-bottom_width,0),
+	Vector2(-top_width,-length),
+	Vector2(top_width,-length),
+	Vector2(bottom_width,0)])
+	vertices.append_array(v)
+	indices.append_array([0,1,2,0,2,3])
+	v_id_array.append_array([0,1,1,0])
+	colors.append_array([color,color,color,color])
+
+
+func new_branch(v1:Vector2,v4:Vector2,v_id:int,local_angle:float) -> PackedVector2Array:
+	var length:float = length_curve.sample(v_id)
+	var width = width_curve.sample(v_id) / 2.
+	
+	var local_right = (v4 - v1).angle() + local_angle
+	var local_up = local_right - (PI/2.)
+	var center = ((v4 + v1) / 2.)
+	var v_off = Vector2(length,0).rotated(local_up)
+	var h_off = Vector2(width,0).rotated(local_right)
+	
+	var v2 = center + v_off - h_off
+	var v3 = center + v_off + h_off
+	
+	var verts:PackedVector2Array = [v2,v3]
+	return verts
+
+func branch(i1:int,i2:int,v_id:int = 1):
+	var start_point:Vector2 = vertices[i1]
+	var end_point:Vector2 = vertices[i2]
+	var last_vertex:int = vertices.size() - 1
+	var height = float(v_id) / float(iterations)
+	var color:Color = color_gradient.sample(height)
+	for b in branches:
+		var local_angle = lerp(-angle,angle, float(b) / float(branches - 1))
+		var branch:PackedVector2Array = new_branch(start_point,end_point,v_id,local_angle)
+		vertices.append_array(branch)
+		last_vertex = vertices.size() - 1
+		indices.append_array([i1,last_vertex - 1, last_vertex])
+		indices.append_array([i1,last_vertex, i2])
+		colors.append_array([color,color])
+		if v_id < iterations:
+			branch(last_vertex - 1,last_vertex, v_id + 1)
+	
+	
 func _ready() -> void:
-	root_branch = branch_scene.instantiate()
-	root_branch.root = true
-	root_branch.world = self
-	add_child(root_branch)
-	node_ready = true
-	update_all()
-	count_branches()
-	pass
+	root_branch()
+	branch(1,2)
+	
+	var arrays = []
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = vertices
+	arrays[Mesh.ARRAY_INDEX] = indices
+	arrays[Mesh.ARRAY_COLOR] =  colors
+	var flags = Mesh.ARRAY_FORMAT_VERTEX + Mesh.ARRAY_FORMAT_COLOR + Mesh.ARRAY_FORMAT_INDEX
+	tree_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,arrays,[],{},flags)
+	mesh = tree_mesh
 
 func max_branches()->int:
 	var m = 0
@@ -74,47 +122,53 @@ func max_branches()->int:
 		m += pow(branches, e)
 		e -= 1
 	return m
-
-func count_branches():
-	print("There are " + str(root_branch.get_branch_count()) + " branches in the tree")
-	print("There should be " + str(max_branches()) + " in the tasdadree")
-
-func update_iterations():
-	if node_ready:
-		root_branch.update_iterations()
-		count_branches()
-
-func update_branches():
-	if node_ready:
-		root_branch.update_branches()
-		count_branches()
-
-func update_angle():
-	if node_ready:
-		root_branch.update_angle()
-
-#func update_color():
+#------------------OLD------------------
+#var branch_scene = preload("res://branch.tscn")
+#var root_branch:Line2D
+#func _ready() -> void:
+	#root_branch = branch_scene.instantiate()
+	#root_branch.root = true
+	#root_branch.world = self
+	#add_child(root_branch)
+	#node_ready = true
+	#update_all()
+	#count_branches()
+	#pass
+#func count_branches():
+	#print("There are " + str(root_branch.get_branch_count()) + " branches in the tree")
+	#print("There should be " + str(max_branches()) + " in the tree")
+#
+#func update_iterations():
 	#if node_ready:
-		#root_branch.update_color()
-
-func update_width():
-	if node_ready:
-		root_branch.update_width()
-
-func update_length():
-	if node_ready:
-		root_branch.update_length()
-
-func update_random():
-	if node_ready:
-		root_branch.update_random()
-
-func update_all():
-	if node_ready:
-		root_branch.update_iterations()
-		root_branch.update_branches()
-		root_branch.update_angle()
-		#root_branch.update_color()
+		#root_branch.update_iterations()
+		#count_branches()
+#
+#func update_branches():
+	#if node_ready:
+		#root_branch.update_branches()
+		#count_branches()
+#
+#func update_angle():
+	#if node_ready:
+		#root_branch.update_angle()
+#
+#
+#func update_width():
+	#if node_ready:
 		#root_branch.update_width()
-		root_branch.update_length()
-		root_branch.update_random()
+#
+#func update_length():
+	#if node_ready:
+		#root_branch.update_length()
+#
+#func update_random():
+	#if node_ready:
+		#root_branch.update_random()
+#
+#func update_all():
+	#if node_ready:
+		#root_branch.update_iterations()
+		#root_branch.update_branches()
+		#root_branch.update_angle()
+		#root_branch.update_length()
+		#root_branch.update_random()
