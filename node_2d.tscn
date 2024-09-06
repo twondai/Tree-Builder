@@ -1,28 +1,37 @@
-[gd_scene load_steps=5 format=3 uid="uid://bpe7y88bvrxgu"]
+[gd_scene load_steps=7 format=3 uid="uid://bpe7y88bvrxgu"]
 
+[ext_resource type="Shader" path="res://MeshShader.gdshader" id="1_ahpn6"]
 [ext_resource type="Script" path="res://TreeBuilder.gd" id="1_hc3wd"]
 [ext_resource type="Gradient" uid="uid://bgdawcv5yxdqf" path="res://gradient1.tres" id="2_qw3h3"]
 [ext_resource type="Curve" uid="uid://cil6wcfndim6r" path="res://width_curve1.tres" id="3_413tv"]
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tnwu7"]
+shader = ExtResource("1_ahpn6")
+shader_parameter/debug_draw = false
+
 [sub_resource type="Curve" id="Curve_duepu"]
 min_value = 0.99
 max_value = 100.0
-_data = [Vector2(0, 30.3899), 0.0, 0.0, 0, 0, Vector2(1, 46.1507), 0.0, 0.0, 0, 0]
+_data = [Vector2(0, 56.6579), 0.0, 90.2663, 0, 0, Vector2(1, 12.659), 0.0, 0.0, 0, 0]
 point_count = 2
 
 [node name="MeshInstance2D" type="MeshInstance2D"]
+material = SubResource("ShaderMaterial_tnwu7")
 script = ExtResource("1_hc3wd")
-iterations = 3
-branches = 5
-angle = 1.52641
+iterations = 8
+branches = 3
+angle = 0.546407
 color_gradient = ExtResource("2_qw3h3")
 width_curve = ExtResource("3_413tv")
 length_curve = SubResource("Curve_duepu")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(0, -230)
+position = Vector2(0, -50)
+offset = Vector2(0, -76.815)
+zoom = Vector2(8.865, 8.865)
 
 [node name="Line2D" type="Line2D" parent="."]
+visible = false
 position = Vector2(0, -78)
 points = PackedVector2Array(-10, 0, 10, 0)
 width = 1.0
