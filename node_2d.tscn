@@ -21,14 +21,17 @@ script = ExtResource("1_hc3wd")
 iterations = 8
 branches = 3
 angle = 0.546407
+angle_decay = null
+angle_random = null
 color_gradient = ExtResource("2_qw3h3")
 width_curve = ExtResource("3_413tv")
 length_curve = SubResource("Curve_duepu")
+random_seed = null
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(0, -50)
 offset = Vector2(0, -76.815)
-zoom = Vector2(8.865, 8.865)
+zoom = Vector2(10.635, 10.635)
 
 [node name="Line2D" type="Line2D" parent="."]
 visible = false
