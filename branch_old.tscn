@@ -1,0 +1,29 @@
+[gd_scene load_steps=8 format=3 uid="uid://dl3i1ju5440jm"]
+
+[ext_resource type="Shader" path="res://shader1.gdshader" id="1_y23ie"]
+[ext_resource type="Gradient" uid="uid://bgdawcv5yxdqf" path="res://gradient1.tres" id="2_12hw4"]
+[ext_resource type="Curve" uid="uid://cil6wcfndim6r" path="res://width_curve1.tres" id="3_clqho"]
+[ext_resource type="Script" path="res://branch_old.gd" id="4_0m0hu"]
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_s5qhh"]
+gradient = ExtResource("2_12hw4")
+
+[sub_resource type="CurveTexture" id="CurveTexture_j576c"]
+curve = ExtResource("3_clqho")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tkewn"]
+resource_local_to_scene = true
+shader = ExtResource("1_y23ie")
+shader_parameter/v_id = 0.0
+shader_parameter/iterations = 1.0
+shader_parameter/color_gradient = SubResource("GradientTexture1D_s5qhh")
+shader_parameter/width_curve = SubResource("CurveTexture_j576c")
+
+[node name="Branch" type="Line2D"]
+material = SubResource("ShaderMaterial_tkewn")
+points = PackedVector2Array(0, 0, 0, -50)
+closed = true
+width = 1.0
+begin_cap_mode = 2
+end_cap_mode = 2
+script = ExtResource("4_0m0hu")
