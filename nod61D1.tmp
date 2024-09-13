@@ -13,23 +13,22 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tnwu7"]
 shader = ExtResource("1_ahpn6")
-shader_parameter/debug_draw = false
+shader_parameter/debug_draw = true
 
 [sub_resource type="Curve" id="Curve_duepu"]
 min_value = 0.99
 max_value = 100.0
-_data = [Vector2(0, 100), 0.0, -80.7678, 0, 1, Vector2(1, 19.2322), 0.0, 0.0, 0, 0]
+_data = [Vector2(0, 100), 0.0, -84.7142, 0, 1, Vector2(1, 15.2858), -84.7142, 0.0, 1, 0]
 point_count = 2
 
 [sub_resource type="Curve" id="Curve_ydolg"]
-max_value = 0.99
-_data = [Vector2(0, 0.947931), 0.0, 0.0, 0, 0, Vector2(0.820598, 0.783805), 0.0, 0.0, 0, 0, Vector2(1, 0.0540721), 0.0, 0.0, 0, 0]
-point_count = 3
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.106142), 0.0, 0.0, 0, 0]
+point_count = 2
 
 [sub_resource type="Curve" id="Curve_c3yxn"]
-min_value = 0.1
+min_value = 1.0
 max_value = 100.0
-_data = [Vector2(0, 100), 0.0, -99.9, 0, 1, Vector2(1, 0.1), -99.9, 0.0, 1, 0]
+_data = [Vector2(0, 100), 0.0, -99.0, 0, 1, Vector2(1, 1), -99.0, 0.0, 1, 0]
 point_count = 2
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_is1w4"]
@@ -42,7 +41,7 @@ shader_parameter/target_angle = 1.09
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_b2l7j"]
 shader = ExtResource("9_pmj1b")
-shader_parameter/draw_grid = false
+shader_parameter/draw_grid = true
 shader_parameter/grid_size = 25.0
 shader_parameter/grid_size_px = 1000.0
 shader_parameter/selected_cell = Vector2i(12, 15)
@@ -51,20 +50,16 @@ shader_parameter/line_thickness = 0.1
 [node name="MeshInstance2D" type="MeshInstance2D"]
 material = SubResource("ShaderMaterial_tnwu7")
 script = ExtResource("1_hc3wd")
-iterations = 6
-branches = 4
+iterations = 4
 angle = 0.534407
-angle_decay = -0.4
-angle_random = 0.419
+angle_random = 0.588
 color_gradient = ExtResource("2_qw3h3")
 width_curve = ExtResource("3_413tv")
 length_curve = SubResource("Curve_duepu")
-random_seed = 419
-physics_enabled = true
-wind_dir = 0.045
-wind_strength = 2.75
+wind_dir = -0.925
 stiffness_curve = SubResource("Curve_ydolg")
 mass_curve = SubResource("Curve_c3yxn")
+random_seed = 424
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(0, -50)
@@ -80,7 +75,6 @@ texture = ExtResource("6_632a3")
 input_pickable = false
 monitorable = false
 script = ExtResource("7_o8qhe")
-selector_enabled = false
 selection_indicator = NodePath("../SelectionIndicator")
 camera = NodePath("../Camera2D")
 grid = NodePath("../Grid")
